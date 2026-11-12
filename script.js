@@ -320,7 +320,7 @@ document.getElementById("btnReiniciar").addEventListener("click", iniciarJogo);
 // =====================================================================
 
 // Endereco do banco de dados no Firebase
-const URL_BANCO = "https://joguinho-hehe-default-rtdb.firebaseio.com";
+const URL_BANCO = "https://joguinho-europa-default-rtdb.europe-west1.firebasedatabase.app";
 
 // Codigo aleatorio para diferenciar este jogador dos outros
 const meuId = "j" + Math.floor(Math.random() * 1000000000);
