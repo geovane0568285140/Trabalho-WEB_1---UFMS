@@ -1,0 +1,293 @@
+/*
+  Arquivo: style.css
+  Funcao: aparencia da pagina e do MAPA (CSS3).
+
+  O mapa e uma grade (CSS Grid) com 15 colunas e 11 linhas.
+  Cada quadrado tem uma classe que define a cor ou o desenho dele.
+*/
+
+/* ---------- Estilo geral ---------- */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #eef3f0;
+  color: #2b2b2b;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+h1 { text-align: center; margin-bottom: 8px; }
+h2 { font-size: 1.05rem; margin: 16px 0 8px 0; }
+
+#topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+#placar { font-size: 1.4rem; font-weight: bold; }
+
+#btnReiniciar {
+  padding: 8px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #2f7d4f;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+#btnReiniciar:hover { background-color: #256340; }
+
+/* ---------- Mapa ---------- */
+
+/* A grade: 15 colunas e 11 linhas do mesmo tamanho */
+#mapa {
+  position: relative;               /* base para posicionar lixos e jogador */
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 15 / 11;            /* mantem a proporcao do mapa */
+  container-type: inline-size;      /* permite usar a unidade cqw nos tamanhos */
+  border: 4px solid #3b3b3b;        /* limite do mapa */
+  border-radius: 6px;
+}
+
+/* Cada quadrado do mapa */
+.celula { position: relative; }
+
+/* Tipos de terreno: so mudam a cor */
+.calcada { background-color: #d9d9d9; }
+.rua     { background-color: #4a4a4a; }
+.grama   { background-color: #7ccf6b; }
+
+/* Quadrado da casa: o chao dela e grama */
+.casa { background-color: #7ccf6b; }
+
+/* Parede da casa: um quadrado colorido */
+.casa .parede {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 39%;
+  bottom: 4%;
+}
+
+/* Telhado da casa: um triangulo (retangulo recortado em formato de triangulo) */
+.casa .telhado {
+  position: absolute;
+  left: 4%;
+  width: 92%;
+  top: 6%;
+  height: 33%;
+  background-color: #7a3b2e;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+
+/* Cada casa tem uma cor de parede diferente */
+.cor1  .parede { background-color: #e07a5f; }
+.cor2  .parede { background-color: #f2cc8f; }
+.cor3  .parede { background-color: #81b29a; }
+.cor4  .parede { background-color: #6c8ebf; }
+.cor5  .parede { background-color: #b5838d; }
+.cor6  .parede { background-color: #f4a261; }
+.cor7  .parede { background-color: #9d8189; }
+.cor8  .parede { background-color: #8ecae6; }
+.cor9  .parede { background-color: #c9ada7; }
+.cor10 .parede { background-color: #a7c957; }
+
+/* Lixeira: caixa colorida com o simbolo no centro */
+.lixeira {
+  position: absolute;
+  left: 17%;
+  right: 17%;
+  top: 21%;
+  bottom: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3cqw;                  /* tamanho do simbolo, acompanha o mapa */
+  border-radius: 4px;
+}
+
+/* Tampa da lixeira */
+.lixeira::before {
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: -14%;
+  height: 16%;
+  background-color: #222222;
+  border-radius: 2px;
+}
+
+/* Cor de cada lixeira (as mesmas cores da legenda) */
+.papel    { background-color: #1c7ed6; }
+.plastico { background-color: #e03131; }
+.metal    { background-color: #f1c40f; }
+.vidro    { background-color: #2f9e44; }
+
+/* Contorno branco na lixeira que esta ao alcance do jogador */
+.lixeira.destaque { outline: 3px solid #ffffff; }
+
+/* Camada que cobre o mapa e guarda os lixos */
+#lixos {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;             /* cliques passam direto */
+}
+
+/* Um lixo: ocupa exatamente um quadrado do mapa */
+.lixo {
+  position: absolute;
+  width: calc(100% / 15);
+  height: calc(100% / 11);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4.2cqw;
+}
+
+/* Jogador: ocupa um quadrado e e desenhado como um circulo amarelo */
+#jogador {
+  position: absolute;
+  width: calc(100% / 15);
+  height: calc(100% / 11);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.08s, top 0.08s;   /* deslizar suave ao andar */
+  pointer-events: none;
+}
+
+/* Corpo do jogador */
+#jogador::before {
+  content: "";
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: #ffd166;
+  border: 2px solid #222222;
+  box-sizing: border-box;
+}
+
+/* Olhos do jogador */
+.olho {
+  position: absolute;
+  top: 40%;
+  width: 8%;
+  height: 8%;
+  border-radius: 50%;
+  background-color: #222222;
+}
+.olho1 { left: 37%; }
+.olho2 { left: 55%; }
+
+/* ---------- Mensagem ---------- */
+#mensagem {
+  margin-top: 8px;
+  padding: 10px;
+  min-height: 24px;
+  background-color: #ffffff;
+  border-left: 6px solid #888888;
+  border-radius: 4px;
+}
+
+#mensagem.acerto { border-left-color: #2f9e44; background-color: #e6f6ea; }
+#mensagem.erro   { border-left-color: #d6336c; background-color: #fde8ef; }
+#mensagem.aviso  { border-left-color: #f08c00; background-color: #fff4e0; }
+
+/* ---------- Inventario ---------- */
+#inventario { display: flex; gap: 8px; }
+
+.espaco {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 3px solid #bbbbbb;
+  border-radius: 8px;
+  font-size: 1.8rem;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Espaco escolhido pelo jogador */
+.espaco.selecionado {
+  border-color: #1c7ed6;
+  background-color: #e7f1fb;
+}
+
+/* Numero pequeno no canto de cada espaco */
+.espaco .numero {
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  font-size: 0.7rem;
+  color: #666666;
+}
+
+/* ---------- Legenda ---------- */
+#legenda {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.item-legenda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 6px;
+}
+
+.cor-legenda {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+#instrucoes ul { padding-left: 20px; line-height: 1.5; }
+
+
+/* =====================================================================
+                    ESTILO DAS SECOES DO SITE
+   ===================================================================== */
+header { text-align: center; }
+nav a { color: #2f7d4f; }
+
+.secao {
+  background-color: #ffffff;
+  padding: 8px 16px 16px 16px;
+  margin: 16px 0;
+  border-radius: 6px;
+}
+.secao img { max-width: 100%; height: auto; }
+
+/* Titulo de cada secao maior que os subtitulos */
+.secao > h2 { font-size: 1.5rem; }
+.secao h3 { font-size: 1.1rem; }
+
+li { margin-bottom: 4px; }
+
+/* Formulario de contato */
+#formContato label { display: block; margin-top: 8px; }
+#formContato input,
+#formContato textarea {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}
+#formContato button { margin-top: 10px; padding: 8px 16px; }
