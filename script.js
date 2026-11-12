@@ -310,5 +310,129 @@ function iniciarJogo() {
 
 document.getElementById("btnReiniciar").addEventListener("click", iniciarJogo);
 
-// Inicia o jogo ao abrir a pagina
-iniciarJogo();
+// O jogo so comeca depois que a pessoa digita o nome (veja a funcao entrar)
+
+// =====================================================================
+//                     PARTE ONLINE (Firebase)
+// O jogo usa o Firebase Realtime Database como um "quadro" na internet:
+// cada jogador escreve ali seu nome, posicao e pontos, e le os dados
+// de todos os outros. Isso acontece a cada meio segundo.
+// =====================================================================
+
+// Endereco do banco de dados no Firebase
+const URL_BANCO = "https://joguinho-hehe-default-rtdb.firebaseio.com";
+
+// Codigo aleatorio para diferenciar este jogador dos outros
+const meuId = "j" + Math.floor(Math.random() * 1000000000);
+let meuNome = "";
+
+// 1) Entrar no jogo depois de digitar o nome
+function entrar() {
+  const nome = document.getElementById("campoNome").value.trim();
+  if (nome === "") return; // nao deixa entrar sem nome
+
+  meuNome = nome;
+
+  // Esconde a tela de nome e mostra o jogo
+  document.getElementById("entrada").style.display = "none";
+  document.getElementById("areaJogo").style.display = "block";
+
+  // Escreve o nome em cima do proprio personagem
+  const etiqueta = document.createElement("span");
+  etiqueta.className = "nome";
+  etiqueta.textContent = meuNome;
+  elementoJogador.appendChild(etiqueta);
+
+  iniciarJogo();
+
+  // A cada 500 milissegundos (meio segundo) conversa com o Firebase
+  setInterval(sincronizar, 500);
+}
+
+// 2) Envia os meus dados e busca os dados de todos
+function sincronizar() {
+  // Envia: nome, posicao (x, y), pontos e a hora do envio
+  fetch(URL_BANCO + "/jogadores/" + meuId + ".json", {
+    method: "PUT",
+    body: JSON.stringify({
+      nome: meuNome,
+      x: jogador.x,
+      y: jogador.y,
+      pontos: pontos,
+      hora: Date.now()
+    })
+  });
+
+  // Busca todos os jogadores
+  fetch(URL_BANCO + "/jogadores.json")
+    .then(resposta => resposta.json())
+    .then(dados => {
+      // Se o Firebase recusar (regras fechadas), ele devolve { error: "..." }
+      if (dados && dados.error) {
+        document.getElementById("status").textContent = "Erro do Firebase: " + dados.error;
+        return;
+      }
+      document.getElementById("status").textContent = "Conectado ao Firebase";
+      mostrarJogadores(dados);
+    })
+    .catch(erro => {
+      document.getElementById("status").textContent = "Sem conexão com o Firebase: " + erro.message;
+    });
+}
+
+// 3) Desenha os outros jogadores no mapa e monta o ranking
+function mostrarJogadores(dados) {
+  const camada = document.getElementById("outros");
+  const ranking = document.getElementById("ranking");
+  camada.innerHTML = "";
+  ranking.innerHTML = "";
+
+  // Passa os dados para uma lista, so com quem esta jogando agora
+  // (quem enviou dados nos ultimos 10 segundos)
+  const jogando = [];
+  for (const id in dados) {
+    const j = dados[id];
+    if (Date.now() - j.hora < 10000) {
+      j.id = id;
+      jogando.push(j);
+    }
+  }
+
+  // Ordena do maior para o menor numero de pontos
+  jogando.sort((a, b) => b.pontos - a.pontos);
+
+  jogando.forEach(j => {
+    // Linha do ranking
+    const item = document.createElement("li");
+    item.textContent = j.nome + " - " + j.pontos + " pontos";
+    if (j.id === meuId) item.style.fontWeight = "bold"; // eu fico em negrito
+    ranking.appendChild(item);
+
+    // Boneco no mapa (o meu personagem ja existe, entao pula ele)
+    if (j.id !== meuId) {
+      const boneco = document.createElement("div");
+      boneco.className = "outro";
+      boneco.style.left = (j.x * 100 / COLUNAS) + "%";
+      boneco.style.top = (j.y * 100 / LINHAS) + "%";
+
+      const nome = document.createElement("span");
+      nome.className = "nome";
+      nome.textContent = j.nome;
+      boneco.appendChild(nome);
+
+      camada.appendChild(boneco);
+    }
+  });
+}
+
+// 4) Ao fechar a pagina, apaga o jogador do Firebase
+window.addEventListener("pagehide", () => {
+  if (meuNome === "") return;
+  fetch(URL_BANCO + "/jogadores/" + meuId + ".json", { method: "DELETE", keepalive: true });
+});
+
+// Botao "Jogar" e tecla Enter no campo de nome
+document.getElementById("btnEntrar").addEventListener("click", entrar);
+document.getElementById("campoNome").addEventListener("keydown", evento => {
+  if (evento.key === "Enter") entrar();
+});

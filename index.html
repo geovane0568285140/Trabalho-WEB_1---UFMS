@@ -138,6 +138,8 @@
     <ul>
       <li>HTML5, CSS3 e JavaScript</li>
       <li>Editor: Visual Studio Code</li>
+      <li>Firebase Realtime Database (para o modo online do jogo)</li>
+      <li>Netlify (para colocar o site na internet)</li>
     </ul>
 
     <h3>Uso de Inteligência Artificial</h3>
@@ -145,6 +147,7 @@
       Usamos a IA <strong>Claude</strong> (da empresa Anthropic) principalmente no <strong>jogo</strong>:
       ela nos ajudou com o mapa feito como uma <strong>matriz</strong> de 15 colunas por 11 linhas
       (cada quadrado tem uma posição de linha e coluna) e com a lógica de andar, pegar e jogar o lixo.
+      Na versão online, a IA também ajudou a ligar o jogo ao Firebase (nomes, jogadores no mapa e ranking).
       Também usamos a IA para ajudar a pesquisar e organizar os textos do site.
     </p>
 
@@ -177,7 +180,16 @@
   Os lixos e o jogador sao colocados pelo JavaScript.
 -->
   <section id="jogo" class="secao">
-    <h2>Jogo da Reciclagem</h2>
+    <h2>Jogo da Reciclagem (online)</h2>
+    <!-- Tela de nome: aparece antes do jogo -->
+    <div id="entrada">
+      <p>Digite seu nome para jogar:</p>
+      <input type="text" id="campoNome" maxlength="15">
+      <button type="button" id="btnEntrar">Jogar</button>
+    </div>
+
+    <!-- O jogo fica escondido ate a pessoa digitar o nome -->
+    <div id="areaJogo" style="display: none;">
     <!-- Barra superior: pontuacao e botao de reiniciar -->
     <div id="topo">
       <div id="placar">Pontos: <span id="pontos">0</span></div>
@@ -366,6 +378,9 @@
       <!-- Camada onde o JavaScript coloca os lixos -->
       <div id="lixos"></div>
 
+      <!-- Camada onde aparecem os OUTROS jogadores (online) -->
+      <div id="outros"></div>
+
       <!-- Jogador (o JavaScript muda a posicao dele) -->
       <div id="jogador"><span class="olho olho1"></span><span class="olho olho2"></span></div>
     </div>
@@ -377,6 +392,13 @@
     <section>
       <h2>Inventario (<span id="qtdInventario">0</span>/5)</h2>
       <div id="inventario"></div>
+    </section>
+
+    <!-- Ranking: so quem esta jogando agora -->
+    <section>
+      <h2>Ranking - jogando agora</h2>
+      <ol id="ranking"></ol>
+      <p id="status">Conectando...</p>
     </section>
 
     <!-- Legenda das cores da coleta seletiva -->
@@ -401,6 +423,7 @@
         <li>Lixeira correta: +1 ponto. Lixeira errada: -1 ponto.</li>
       </ul>
     </section>
+    </div>
   </section>
 
   <script src="script.js"></script>
