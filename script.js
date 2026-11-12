@@ -1,4 +1,16 @@
+// Arquivo: script.js
+// Funcao: logica do Jogo da Reciclagem.
+// O mapa (15 x 11 quadrados) esta no HTML. Aqui o JavaScript:
+//  - guarda onde estao as lixeiras;
+//  - cria lixos em lugares aleatorios a cada INTERVALO;
+//  - move o jogador com o teclado e pega o lixo em que ele pisa;
+//  - confere se o lixo foi jogado na lixeira certa e soma/tira pontos.
+// Posicao no mapa: x = coluna (0 a 14), y = linha (0 a 10).
+// Para achar o quadrado na lista: indice = y * COLUNAS + x.
+
 // Configuracoes do jogo
+// COLUNAS/LINHAS: tamanho do mapa | LIMITE_INVENTARIO: itens que o jogador carrega
+// MAX_LIXOS: maximo de lixos no chao | INTERVALO: tempo (ms) para nascer um lixo novo
 const COLUNAS = 15;
 const LINHAS = 11;
 const LIMITE_INVENTARIO = 5;
