@@ -335,3 +335,12 @@ li { margin-bottom: 4px; }
   padding: 0 3px;
   white-space: nowrap;
 }
+
+/* Noticias: cada uma em um cartao com titulo, foto e link */
+.noticia {
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+.noticia img { width: 100%; max-width: 400px; }
